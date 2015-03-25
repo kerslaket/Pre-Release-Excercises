@@ -74,6 +74,8 @@ def DisplayMenu():
   print('2. Play game (without shuffle)')
   print('3. Display recent scores')
   print('4. Reset recent scores')
+  print('5. Options')
+  print('6. Save high scores')
   print()
   print('Select an option from the menu (or enter q to quit): ', end='')
 
@@ -122,8 +124,12 @@ def GetCard(ThisCard, Deck, NoOfCardsTurnedOver):
   Deck[52 - NoOfCardsTurnedOver].Suit = 0
   Deck[52 - NoOfCardsTurnedOver].Rank = 0
 
-def IsNextCardHigher(LastCard, NextCard):
+def IsNextCardHigher(LastCard, NextCard): 
   Higher = False
+  if NextCard.Rank == 1 and AceValue == 'h':
+    NextCard.Rank = 14
+  if LastCard.Rank == 1 and AceValue == 'h':
+    LastCard.Rank = 14
   if NextCard.Rank > LastCard.Rank:
     Higher = True
   return Higher
@@ -193,6 +199,51 @@ def UpdateRecentScores(RecentScores, Score):
   RecentScores[Count].Score = Score
   RecentScores[Count].Date = datetime.strftime(datetime.now(),"%d-%m-%Y")
 
+def DisplayOptions():
+  print("OPTION MENU")
+  print()
+  print("1. Set Ace to High Or Low")
+  print()
+  print("Select an option from the menu (or enter q to quit): ")
+
+def GetOptionChoice():
+  OptionChoice = ""
+  while OptionChoice == "":
+    OptionChoice = input()
+  return OptionChoice.lower()[0]
+
+def SetOptions(OptionChoice):
+  if OptionChoice == "q":
+    print()
+  if OptionChoice == "1":
+    SetAceHighOrLow()
+
+
+def SetAceHighOrLow():
+  global AceValue
+  AceValue = input("Do you want the Ace to be (h)igh or (l)ow: ")
+  AceValue = AceValue.lower()[0]
+
+def ArrangeScores(RecentScores):
+  end = True
+  Length = len(RecentScores)
+  while end == True:
+      Length = Length - 1
+      end = False
+      for item in range(1,Length-1):
+          if RecentScores[item].Score < RecentScores[item+1].Score:
+              placeHolder = RecentScores[item+1]
+              RecentScores[item+1] = RecentScores[item]
+              RecentScores[item] = placeHolder
+              end = True
+
+def SaveScores(RecentScores):
+  with open("High-Scores.txt",mode="w",encoding="utf-8") as File:
+    for Score in RecentScores:
+      File.write(Score.Date.strftime("%d/%m/%y")+" ")
+      File.write(Score.Name + " ")
+      File.write(str(Score.Score))
+  
 def PlayGame(Deck, RecentScores):
   LastCard = TCard()
   NextCard = TCard()
@@ -242,6 +293,13 @@ if __name__ == '__main__':
       LoadDeck(Deck)
       PlayGame(Deck, RecentScores)
     elif Choice == '3':
+      ArrangeScores(RecentScores)
       DisplayRecentScores(RecentScores)
     elif Choice == '4':
       ResetRecentScores(RecentScores)
+    elif Choice == '5':
+      DisplayOptions()
+      OptionChoice = GetOptionChoice()
+      SetOptions(OptionChoice)
+    elif Choice == '6':
+      SaveScores(RecentScores)
