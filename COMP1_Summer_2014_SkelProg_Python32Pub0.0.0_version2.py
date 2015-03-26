@@ -218,7 +218,6 @@ def SetOptions(OptionChoice):
   if OptionChoice == "1":
     SetAceHighOrLow()
 
-
 def SetAceHighOrLow():
   global AceValue
   AceValue = input("Do you want the Ace to be (h)igh or (l)ow: ")
@@ -239,10 +238,10 @@ def ArrangeScores(RecentScores):
 
 def SaveScores(RecentScores):
   with open("High-Scores.txt",mode="w",encoding="utf-8") as File:
-    for Score in RecentScores:
-      File.write(Score.Date.strftime("%d/%m/%y")+" ")
-      File.write(Score.Name + " ")
-      File.write(str(Score.Score))
+    for Score in RecentScores[1:]:
+        File.write(Score.Date+" ")
+        File.write(Score.Name + " ")
+        File.write(str(Score.Score ))
   
 def PlayGame(Deck, RecentScores):
   LastCard = TCard()
@@ -277,6 +276,7 @@ def PlayGame(Deck, RecentScores):
       UpdateRecentScores(RecentScores, 51)
 
 if __name__ == '__main__':
+  AceValue = "l"
   for Count in range(1, 53):
     Deck.append(TCard())
   for Count in range(1, NO_OF_RECENT_SCORES + 1):
@@ -286,6 +286,7 @@ if __name__ == '__main__':
     DisplayMenu()
     Choice = GetMenuChoice()
     if Choice == '1':
+      print(AceValue)
       LoadDeck(Deck)
       ShuffleDeck(Deck)
       PlayGame(Deck, RecentScores)
